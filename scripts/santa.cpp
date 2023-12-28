@@ -14,11 +14,6 @@ void Santa::deliverDecorations(ChristmasTree &christmasTree, std::atomic<int> &d
 
         if (decorations + producedDecorations <= maxDecorations){
             decorations += producedDecorations;
-            if (producedDecorations == 1){
-                std::cout << "Santa brought " << producedDecorations << " decoration!" << std::endl;
-            } else {
-                std::cout << "Santa brought " << producedDecorations << " decorations!" << std::endl;   
-            }
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(2000));

@@ -3,3 +3,7 @@
 Elf::~Elf(){}
 
 Elf::Elf(){}
+
+void Elf::decorate(){
+    
+}

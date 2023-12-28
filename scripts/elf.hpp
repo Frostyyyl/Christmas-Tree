@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 class Elf{
 private:
@@ -6,4 +7,6 @@ private:
 public:
     Elf();
     ~Elf();
+
+    void decorate();
 };

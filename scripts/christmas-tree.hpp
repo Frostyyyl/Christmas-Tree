@@ -17,5 +17,5 @@ public:
     ~ChristmasTree();
     
     void display();
-    const bool isDecorated();
+    bool isDecorated();
 };

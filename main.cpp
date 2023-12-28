@@ -7,6 +7,8 @@
 #include "santa.hpp"
 #include "elf.hpp"
 
+void clearScreen();
+
 // std::this_thread::sleep_for(std::chrono::milliseconds())
 
     // std::random_device seed;
@@ -26,26 +28,42 @@ int main(){
     christmasTreeHeight = 5;
     numberOfElves = 3;
     maxDecorations = christmasTreeHeight + 1; 
-
+    
+    ChristmasTree christmasTree(christmasTreeHeight);
     Santa santa(maxDecorations);
     std::vector<Elf> elves(numberOfElves);
-    ChristmasTree christmasTree(christmasTreeHeight);
+    std::vector<std::thread> elvesThreads;
+
     std::thread santaThread([&santa, &christmasTree, &decorations]{ 
         santa.deliverDecorations(christmasTree, decorations); 
     });
 
+    for (int i = 0; i < numberOfElves; i++){
+        std::thread thread([i, &elves]{
+            elves[i].decorate();
+        });
+        elvesThreads.push_back(std::move(thread));
+    }
 
-    christmasTree.display();
+
+
     std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     for (auto &i : christmasTree.tree){
         for (auto &j : i){
             j = 'o';
         }
     }
-    christmasTree.display();
 
 
     santaThread.join();
 
+    for (int i = 0; i < numberOfElves; i++){
+        elvesThreads[i].join();
+    }
+
     return 0;
+}
+
+void clearScreen(){
+    printf("\033[2J\033[H");
 }

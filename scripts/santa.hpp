@@ -2,7 +2,6 @@
 #include <random>
 #include <thread>
 #include <atomic>
-#include <iostream>
 #include "christmas-tree.hpp"
 
 class Santa{
