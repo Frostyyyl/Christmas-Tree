@@ -46,7 +46,7 @@ void ChristmasTree::display(){
             std::cout << "─";
         }
 
-        std::cout << "┤" << std::endl;
+        std::cout << "┤" << '\n';
     }
 }
 

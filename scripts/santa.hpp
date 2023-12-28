@@ -3,6 +3,7 @@
 #include <thread>
 #include <atomic>
 #include <iostream>
+#include "christmas-tree.hpp"
 
 class Santa{
 private:
@@ -11,5 +12,5 @@ public:
     Santa(int maxDecorations);
     ~Santa();
     
-    void deliverDecorations(std::atomic<int> &decorations);
+    void deliverDecorations(ChristmasTree &christmasTree, std::atomic<int> &decorations);
 };

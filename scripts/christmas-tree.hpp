@@ -1,17 +1,14 @@
 #pragma once
 #include <vector>
 #include <iostream>
-#include "santa.hpp"
-#include "elf.hpp"
-
 
 class ChristmasTree{
-private:
+public:
     static const char NOT_DECORATED_MARK = '^';
     static const char DECORATED_MARK = 'o';
     static const char EMPTY_SCAFFOLDING_MARK = '_';
     static const char ELF_MARK = 'e';
-public:
+    static const char ELF_WORKING_MARK = 'w';
     int treeHeight;
     std::vector<std::vector<char>> tree;
     std::vector<std::vector<char>> scaffolding;
@@ -20,5 +17,5 @@ public:
     ~ChristmasTree();
     
     void display();
-    bool isDecorated();
+    const bool isDecorated();
 };

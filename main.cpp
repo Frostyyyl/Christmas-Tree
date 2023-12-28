@@ -30,16 +30,20 @@ int main(){
     Santa santa(maxDecorations);
     std::vector<Elf> elves(numberOfElves);
     ChristmasTree christmasTree(christmasTreeHeight);
-    std::thread santaThread([&santa, &decorations]{
-        santa.deliverDecorations(decorations);
+    std::thread santaThread([&santa, &christmasTree, &decorations]{ 
+        santa.deliverDecorations(christmasTree, decorations); 
     });
 
+
+    christmasTree.display();
+    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+    for (auto &i : christmasTree.tree){
+        for (auto &j : i){
+            j = 'o';
+        }
+    }
     christmasTree.display();
 
-
-    while (!christmasTree.isDecorated()){
-        break;
-    }
 
     santaThread.join();
 
