@@ -5,19 +5,29 @@
 #include <mutex>
 #include "christmas-tree.hpp"
 
-#define WORKING_TIME 1000
-#define CLIMBING_TIME 500
-#define DESCENDING_TIME 400
-
 class Elf{
 private:
-    int currentLevel = 0;
-    int currentSpace = 0;
-    static std::mutex decorationsGuard;
+    static const std::chrono::milliseconds WAITING_TIME;
+    static const std::chrono::milliseconds WORKING_TIME;
+    static const std::chrono::milliseconds CLIMBING_TIME;
+    static const std::chrono::milliseconds DESCENDING_TIME;
+    static const std::chrono::milliseconds TAKING_DECORATION_TIME;
+    static const char ELF_SYMBOL = 'e'; // Currently not used
+    static const char ELF_WORKING_SYMBOL = 'w';
+    static const char ELF_WAITING_SYMBOL = 's';
+    static const char ELF_CLIMBING_SYMBOL = 'c';
+    static const char ELF_DESCENDING_SYMBOL = 'd';
+    static std::mutex decorationsAccessGuard;
+    int currentHeight = -1;
+    int currentWidth = 0;
+    void goHigher(ChristmasTree &christmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &scaffoldingAccessGuard);
+    void goLower(ChristmasTree &christmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &scaffoldingAccessGuard);
+    void getDecoration(std::atomic<int> &decorations);
+    void hangDecoration(ChristmasTree &ChristmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &treeAccessGuard); 
 public:
     Elf();
     ~Elf();
 
-    void decorate(ChristmasTree &christmasTree, std::atomic<int> &decorations, std::vector<std::vector<std::unique_ptr<std::mutex>>> &treeAccessGuard);
-    void goHigher(int index, ChristmasTree &christmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &treeAccessGuard);
+    void decorate(ChristmasTree &christmasTree, std::atomic<int> &decorations, std::vector<std::vector<std::unique_ptr
+    <std::mutex>>> &treeAccessGuard, std::vector<std::vector<std::unique_ptr<std::mutex>>> &scaffoldingAccessGuard);
 };

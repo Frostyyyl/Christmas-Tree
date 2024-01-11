@@ -7,47 +7,50 @@
 #include "santa.hpp"
 #include "elf.hpp"
 
-void loadVariables(int &christmasTreeHeight, int &numberOfElves, int &maxNumberOfDecorations);
+void handleInput(int &christmasTreeHeight, int &numberOfElves, int &maxNumberOfDecorations);
+void handleOutput(ChristmasTree &christmasTree);
 void clearScreen();
-
-// std::this_thread::sleep_for(std::chrono::milliseconds())
-// std::random_device seed;
-// std::mt19937 generator(seed());
-// std::uniform_int_distribution<int> random(1, 100);
 
 int main(){
     int christmasTreeHeight = 3;
-    int numberOfElves = 2;
+    int numberOfElves = 3;
     int maxNumberOfDecorations = 5;
-    std::atomic<int> decorations = 0;
     ChristmasTree christmasTree(christmasTreeHeight);
     Santa santa(maxNumberOfDecorations);
+    std::atomic<int> decorations = 0;
     std::vector<Elf> elves(numberOfElves);
-    std::vector<std::thread> elfThreads;
     std::vector<std::vector<std::unique_ptr<std::mutex>>> treeAccessGuard(christmasTreeHeight);
-    
-    // Resize the tree access guard to match the size of the christmas tree
+    std::vector<std::vector<std::unique_ptr<std::mutex>>> scaffoldingAccessGuard(christmasTreeHeight);
+
+    // Resize the access guards to match the size of the christmas tree and scaffolding
     for (int i = 0; i < christmasTreeHeight; i++){
         for (int j = 0; j < christmasTree.tree[i].size(); j++){
-            std::unique_ptr<std::mutex>mutex{ new std::mutex };
+            std::unique_ptr<std::mutex> mutex{ new std::mutex };
             treeAccessGuard[i].push_back(std::move(mutex));
+        }
+        for (int j = 0; j < christmasTree.scaffolding[i].size(); j++){
+            std::unique_ptr<std::mutex> mutex{ new std::mutex };
+            scaffoldingAccessGuard[i].push_back(std::move(mutex));
         }
     }
 
     // Create threads
+    std::thread outputThread([&christmasTree]{
+        handleOutput(christmasTree);
+    });
     std::thread santaThread([&santa, &christmasTree, &decorations]{ 
         santa.deliverDecorations(decorations); 
     });
+    std::vector<std::thread> elfThreads;
     for (int i = 0; i < numberOfElves; i++){
-        std::thread thread([i, &elves, &christmasTree, &decorations, &treeAccessGuard]{
-            elves[i].decorate(christmasTree, decorations, treeAccessGuard);
+        std::thread thread([i, &elves, &christmasTree, &decorations, &treeAccessGuard, &scaffoldingAccessGuard]{
+            elves[i].decorate(christmasTree, decorations, treeAccessGuard, scaffoldingAccessGuard);
         });
         elfThreads.push_back(std::move(thread));
     }
 
-    // christmasTree.display();
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+    std::this_thread::sleep_for(std::chrono::seconds(20));
 
     // std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     // for (auto &i : christmasTree.tree){
@@ -57,6 +60,7 @@ int main(){
     // }
 
     // Join threads to complete the program
+    outputThread.detach();
     santaThread.detach();
     for (auto &elfThread : elfThreads){
         elfThread.detach();
@@ -65,7 +69,7 @@ int main(){
     return 0;
 }
 
-void loadVariables(int &christmasTreeHeight, int &numberOfElves, int &maxNumberOfDecorations){
+void handleInput(int &christmasTreeHeight, int &numberOfElves, int &maxNumberOfDecorations){
     do {
         std::cout << "Enter the christmas tree height: ";
         std::cin >> christmasTreeHeight;
@@ -78,6 +82,14 @@ void loadVariables(int &christmasTreeHeight, int &numberOfElves, int &maxNumberO
         std::cout << "Enter the maximum number of decorations: ";
         std::cin >> maxNumberOfDecorations;
     } while (maxNumberOfDecorations < 1);
+}
+
+void handleOutput(ChristmasTree &christmasTree){
+    while (true){        
+        // clearScreen();
+        christmasTree.display();
+        std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+    }
 }
 
 void clearScreen(){

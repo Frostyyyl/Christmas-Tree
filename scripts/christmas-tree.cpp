@@ -3,18 +3,20 @@
 ChristmasTree::~ChristmasTree(){}
 
 ChristmasTree::ChristmasTree(int treeHeight) : height{treeHeight}{
-    char symbol = UNDECORATED_SYMBOL;
+    // Inicialize the christmas tree
     tree.resize(treeHeight);
     for (int i = 0; i < treeHeight; i++){
-        for (int j = 0; j < (treeHeight - i) * 2 - 1; j++){
-            tree[i].push_back(symbol);
+        tree[i].resize((treeHeight - i) * 2 - 1);
+        for (auto &j : tree[i]){
+            j = UNDECORATED_SYMBOL;
         }
     }
-    symbol = EMPTY_SCAFFOLDING_SYMBOL;
+    // Inicialize the scaffolding
     scaffolding.resize(treeHeight);
     for (int i = 0; i < treeHeight; i++){
-        for (int j = 0; j < treeHeight - i; j++){
-            scaffolding[i].push_back(symbol);
+        scaffolding[i].resize(treeHeight - i);
+        for (auto &j : scaffolding[i]){
+            j = EMPTY_SCAFFOLDING_SYMBOL;
         }
     }
 }
@@ -33,7 +35,7 @@ void ChristmasTree::display(){
         }
 
         // Display scaffolding
-        std::cout << "  ├";
+        std::cout << ((i == 0) ? "  ┌" : "  ├");
         for (int j = 0; j < ((height - (i + 1))); j++){
             std::cout << "─";
         }
@@ -44,17 +46,15 @@ void ChristmasTree::display(){
         for (int j = 0; j < ((height - (i + 1))); j++){
             std::cout << "─";
         }
-
-        std::cout << "┤" << '\n';
+        std::cout << ((i == 0) ? "┐\n" : "┤\n");
     }
 }
 
 bool ChristmasTree::isDecorated(){
     for (auto &i : tree){
         for (auto &j : i){
-            if (j != DECORATED_SYMBOL){
+            if (j != DECORATED_SYMBOL)
                 return false;
-            }
         }
     }
     return true;
