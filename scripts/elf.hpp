@@ -18,6 +18,6 @@ public:
     Elf();
     ~Elf();
 
-    void decorate(ChristmasTree &christmasTree, std::atomic<int> &decorations, std::vector<std::vector<std::mutex>> &treeAccessGuard);
-    void increaseSemaphore(int index, ChristmasTree &christmasTree, std::vector<std::vector<std::mutex>> &treeAccessGuard);
+    void decorate(ChristmasTree &christmasTree, std::atomic<int> &decorations, std::vector<std::vector<std::unique_ptr<std::mutex>>> &treeAccessGuard);
+    void goHigher(int index, ChristmasTree &christmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &treeAccessGuard);
 };

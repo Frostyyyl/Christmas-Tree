@@ -2,6 +2,7 @@
 #include <vector>
 #include <thread>
 #include <atomic>
+#include <memory>
 #include "christmas-tree.hpp"
 #include "santa.hpp"
 #include "elf.hpp"
@@ -13,18 +14,25 @@ void clearScreen();
 // std::random_device seed;
 // std::mt19937 generator(seed());
 // std::uniform_int_distribution<int> random(1, 100);
-    
 
 int main(){
-    int christmasTreeHeight = 5;
-    int numberOfElves = 5;
+    int christmasTreeHeight = 3;
+    int numberOfElves = 2;
     int maxNumberOfDecorations = 5;
     std::atomic<int> decorations = 0;
     ChristmasTree christmasTree(christmasTreeHeight);
-    std::vector<std::vector<std::mutex>> treeAccessGuard(christmasTreeHeight);
     Santa santa(maxNumberOfDecorations);
     std::vector<Elf> elves(numberOfElves);
     std::vector<std::thread> elfThreads;
+    std::vector<std::vector<std::unique_ptr<std::mutex>>> treeAccessGuard(christmasTreeHeight);
+    
+    // Resize the tree access guard to match the size of the christmas tree
+    for (int i = 0; i < christmasTreeHeight; i++){
+        for (int j = 0; j < christmasTree.tree[i].size(); j++){
+            std::unique_ptr<std::mutex>mutex{ new std::mutex };
+            treeAccessGuard[i].push_back(std::move(mutex));
+        }
+    }
 
     // Create threads
     std::thread santaThread([&santa, &christmasTree, &decorations]{ 
@@ -37,7 +45,7 @@ int main(){
         elfThreads.push_back(std::move(thread));
     }
 
-    christmasTree.display();
+    // christmasTree.display();
 
     std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 
@@ -48,10 +56,10 @@ int main(){
     //     }
     // }
 
-    // Join threads to complete the program // FIXME: change join to detach
+    // Join threads to complete the program
     santaThread.detach();
-    for (int i = 0; i < numberOfElves; i++){
-        elfThreads[i].detach();
+    for (auto &elfThread : elfThreads){
+        elfThread.detach();
     }
 
     return 0;
