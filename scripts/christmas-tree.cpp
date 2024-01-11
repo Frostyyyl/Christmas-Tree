@@ -2,47 +2,46 @@
 
 ChristmasTree::~ChristmasTree(){}
 
-ChristmasTree::ChristmasTree(int treeHeight) : treeHeight{treeHeight}{
+ChristmasTree::ChristmasTree(int treeHeight) : height{treeHeight}{
+    char symbol = UNDECORATED_SYMBOL;
     tree.resize(treeHeight);
     for (int i = 0; i < treeHeight; i++){
-        tree[i].resize((treeHeight - i) * 2 - 1);
-        for (auto &j : tree[i]){
-            j = NOT_DECORATED_MARK;
+        for (int j = 0; j < (treeHeight - i) * 2 - 1; j++){
+            tree[i].push_back(symbol);
         }
     }
-
+    symbol = EMPTY_SCAFFOLDING_SYMBOL;
     scaffolding.resize(treeHeight);
     for (int i = 0; i < treeHeight; i++){
-        scaffolding[i].resize(treeHeight - i);
-        for (auto &j : scaffolding[i]){
-            j = EMPTY_SCAFFOLDING_MARK;
+        for (int j = 0; j < treeHeight - i; j++){
+            scaffolding[i].push_back(symbol);
         }
     }
 }
 
 void ChristmasTree::display(){
-    for (int i = 0; i < treeHeight; i++){
-        // Displaing christmas tree
-        for (int j = 0; j < ((treeHeight - (i + 1)) * 2); j++){
+    for (int i = 0; i < height; i++){
+        // Display christmas tree
+        for (int j = 0; j < ((height - (i + 1)) * 2); j++){
             std::cout << " ";
         }
-        for (auto& j : tree[treeHeight - 1 - i]){
+        for (auto& j : tree[height - 1 - i]){
             std::cout << j << " ";
         }
-        for (int j = 0; j < ((treeHeight - (i + 1)) * 2); j++){
+        for (int j = 0; j < ((height - (i + 1)) * 2); j++){
             std::cout << " ";
         }
 
-        // Displaing scaffolding
+        // Display scaffolding
         std::cout << "  ├";
-        for (int j = 0; j < ((treeHeight - (i + 1))); j++){
+        for (int j = 0; j < ((height - (i + 1))); j++){
             std::cout << "─";
         }
         std::cout << " ";
-        for (auto& j : scaffolding[treeHeight - 1 - i]){
+        for (auto& j : scaffolding[height - 1 - i]){
             std::cout << j << " ";
         }
-        for (int j = 0; j < ((treeHeight - (i + 1))); j++){
+        for (int j = 0; j < ((height - (i + 1))); j++){
             std::cout << "─";
         }
 
@@ -53,7 +52,7 @@ void ChristmasTree::display(){
 bool ChristmasTree::isDecorated(){
     for (auto &i : tree){
         for (auto &j : i){
-            if (j != DECORATED_MARK){
+            if (j != DECORATED_SYMBOL){
                 return false;
             }
         }

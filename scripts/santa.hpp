@@ -6,10 +6,10 @@
 
 class Santa{
 private:
-    int maxDecorations;
+    int maxNumberOfDecorations;
 public:
-    Santa(int maxDecorations);
+    Santa(int maxNumberOfDecorations);
     ~Santa();
     
-    void deliverDecorations(ChristmasTree &christmasTree, std::atomic<int> &decorations);
+    void deliverDecorations(std::atomic<int> &decorations);
 };
