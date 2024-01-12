@@ -7,13 +7,18 @@
 #include "santa.hpp"
 #include "elf.hpp"
 
-void handleInput(int &christmasTreeHeight, int &numberOfElves, int &maxNumberOfDecorations);
+void handleInput(int &christmasTreeHeight, int &numberOfElves, int &maxNumberOfDecorations, std::string &screenClear);
 void clearScreen();
 
 int main(){
-    int christmasTreeHeight = 5;
-    int numberOfElves = 5;
-    int maxNumberOfDecorations = 5;
+    int christmasTreeHeight = 0;
+    int numberOfElves = 0;
+    int maxNumberOfDecorations = 0;
+    std::string screenClear = "";
+
+    // Display info and request variable values
+    handleInput(christmasTreeHeight, numberOfElves, maxNumberOfDecorations, screenClear);
+
     ChristmasTree christmasTree(christmasTreeHeight);
     Santa santa(maxNumberOfDecorations);
     std::atomic<int> decorations = 0;
@@ -47,14 +52,16 @@ int main(){
 
     // Main program loop
     while (!christmasTree.isDecorated()){
-        clearScreen();
+        if (screenClear == "yes" || screenClear == "Yes" || screenClear == "y")
+            clearScreen();
         christmasTree.display();
         std::cout << "Current decorations: " << decorations << std::endl;
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(800));
     }
     
     // Show the result
-    clearScreen();
+    if (screenClear == "yes" || screenClear == "Yes" || screenClear == "y")
+        clearScreen();
     christmasTree.display();
     
 
@@ -69,7 +76,18 @@ int main(){
 
 
 
-void handleInput(int &christmasTreeHeight, int &numberOfElves, int &maxNumberOfDecorations){
+void handleInput(int &christmasTreeHeight, int &numberOfElves, int &maxNumberOfDecorations, std::string &screenClear){
+    clearScreen();
+    std::cout   << "---------------------------------------------\n"
+                << "-         Christmas Tree Decorating         -\n"
+                << "---------------------------------------------\n"
+                << "Symbols:\n"
+                << "c - elf is climbing\n"
+                << "d - elf is descending\n"
+                << "w - elf is working\n"
+                << "s - elf is waiting\n"
+                << "---------------------------------------------\n";
+    std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     do {
         std::cout << "Enter the christmas tree height: ";
         std::cin >> christmasTreeHeight;
@@ -82,6 +100,9 @@ void handleInput(int &christmasTreeHeight, int &numberOfElves, int &maxNumberOfD
         std::cout << "Enter the maximum number of decorations: ";
         std::cin >> maxNumberOfDecorations;
     } while (maxNumberOfDecorations < 1);
+    std::cout << "Should the screen be cleared? (Yes/No): ";
+    std::cin >> screenClear;
+    std::cout << "---------------------------------------------\n";
 }
 
 void clearScreen(){
