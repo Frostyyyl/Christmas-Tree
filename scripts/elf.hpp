@@ -20,8 +20,9 @@ private:
     int currentHeight = -1;
     int currentWidth = 0;
     void getDecoration(std::atomic<int> &decorations);
-    void goFloorHigher(ChristmasTree &christmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &scaffoldingAccessGuard);
-    void goFloorLower(ChristmasTree &christmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &scaffoldingAccessGuard);
+    void goHigher(ChristmasTree &christmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &scaffoldingAccessGuard);
+    void goLower(ChristmasTree &christmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &scaffoldingAccessGuard);
+    bool nextFloorIsFull(ChristmasTree &christmasTree);
     bool hangDecoration(ChristmasTree &ChristmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &treeAccessGuard); 
 public:
     Elf();

@@ -54,6 +54,7 @@ int main(){
     while (!christmasTree.isDecorated()){
         if (screenClear == "yes" || screenClear == "Yes" || screenClear == "y")
             clearScreen();
+        std::cout << "---------------------------------------------\n";
         christmasTree.display();
         std::cout << "Current decorations: " << decorations << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(800));
@@ -62,7 +63,9 @@ int main(){
     // Show the result
     if (screenClear == "yes" || screenClear == "Yes" || screenClear == "y")
         clearScreen();
+    std::cout << "---------------------------------------------\n";
     christmasTree.display();
+    std::cout << "---------------------------------------------\n";
     
 
     // Join threads to complete the program
@@ -102,9 +105,8 @@ void handleInput(int &christmasTreeHeight, int &numberOfElves, int &maxNumberOfD
     } while (maxNumberOfDecorations < 1);
     std::cout << "Should the screen be cleared? (Yes/No): ";
     std::cin >> screenClear;
-    std::cout << "---------------------------------------------\n";
 }
 
 void clearScreen(){
-    printf("\033[2J\033[H");
+    std::cout << "\033[2J\033[H";
 }
