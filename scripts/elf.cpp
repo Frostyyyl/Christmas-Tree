@@ -1,10 +1,10 @@
 #include "elf.hpp"
 
-// Assign values to waiting times of elves
-const std::chrono::milliseconds Elf::WAITING_TIME = std::chrono::milliseconds(100);
-const std::chrono::milliseconds Elf::TAKING_DECORATION_TIME = std::chrono::milliseconds(50);
-const std::chrono::milliseconds Elf::WORKING_TIME = std::chrono::milliseconds(3000);
-const std::chrono::milliseconds Elf::CLIMBING_TIME = std::chrono::milliseconds(2000);
+// Assign values to times of elves activities
+const std::chrono::milliseconds Elf::WAITING_TIME = std::chrono::milliseconds(200);
+const std::chrono::milliseconds Elf::TAKING_DECORATION_TIME = std::chrono::milliseconds(100);
+const std::chrono::milliseconds Elf::WORKING_TIME = std::chrono::milliseconds(2000);
+const std::chrono::milliseconds Elf::CLIMBING_TIME = std::chrono::milliseconds(1200);
 const std::chrono::milliseconds Elf::DESCENDING_TIME = std::chrono::milliseconds(1000);
 
 std::mutex Elf::decorationsAccessGuard;
@@ -15,23 +15,25 @@ Elf::Elf(){}
 
 void Elf::decorate(ChristmasTree &christmasTree, std::atomic<int> &decorations, std::vector<std::vector<std::unique_ptr
 <std::mutex>>> &treeAccessGuard, std::vector<std::vector<std::unique_ptr<std::mutex>>> &scaffoldingAccessGuard){
+    // Delay in order do display empty christmas tree
     std::this_thread::sleep_for(WAITING_TIME);
 
     while (true){
-        for (int i = 0; i < 2; i++){
-            getDecoration(decorations);
-            goHigher(christmasTree, scaffoldingAccessGuard);
-            hangDecoration(christmasTree, treeAccessGuard);
+        getDecoration(decorations);
+        for (int i = 0; i < christmasTree.height; i++){
+            goFloorHigher(christmasTree, scaffoldingAccessGuard);
+            if (hangDecoration(christmasTree, treeAccessGuard)){
+                break;
+            }
         }
-        for (int i = 0; i < 2; i++){
-            goLower(christmasTree, scaffoldingAccessGuard);
+        // Go to the bottom
+        while (currentHeight != -1){
+            goFloorLower(christmasTree, scaffoldingAccessGuard);
         }
-        
-        break;
     }
 }
 
-void Elf::goHigher(ChristmasTree &christmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &scaffoldingAccessGuard){
+void Elf::goFloorHigher(ChristmasTree &christmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &scaffoldingAccessGuard){
     if (currentHeight == christmasTree.height - 1){
         std::cerr << "ERROR: Tried going higher while at the top\n";
         return;
@@ -56,7 +58,7 @@ void Elf::goHigher(ChristmasTree &christmasTree, std::vector<std::vector<std::un
     }
 }
 
-void Elf::goLower(ChristmasTree &christmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &scaffoldingAccessGuard){
+void Elf::goFloorLower(ChristmasTree &christmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &scaffoldingAccessGuard){
     if (currentHeight == -1){
         std::cerr << "ERROR: Tried going lower while at the bottom\n";
         return;
@@ -86,6 +88,11 @@ void Elf::goLower(ChristmasTree &christmasTree, std::vector<std::vector<std::uni
 }
 
 void Elf::getDecoration(std::atomic<int> &decorations){
+    if (currentHeight != -1){
+        std::cerr << "ERROR: Tried grabing decoration while not at the bottom\n";
+        return; 
+    }
+
     while (true){
         if (decorationsAccessGuard.try_lock()){
             if (decorations > 0){
@@ -100,20 +107,19 @@ void Elf::getDecoration(std::atomic<int> &decorations){
     }     
 }
 
-void Elf::hangDecoration(ChristmasTree &christmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &treeAccessGuard){
-    while (true){
-        for (int i = 0; i < christmasTree.tree[currentHeight].size(); i++){
-            if (treeAccessGuard[currentHeight][i]->try_lock()){
-                if (christmasTree.tree[currentHeight][i] == ChristmasTree::UNDECORATED_SYMBOL){
-                    christmasTree.scaffolding[currentHeight][currentWidth] = ELF_WORKING_SYMBOL;
-                    std::this_thread::sleep_for(WORKING_TIME);
-                    christmasTree.tree[currentHeight][i] = ChristmasTree::DECORATED_SYMBOL;
-                    christmasTree.scaffolding[currentHeight][currentWidth] = ELF_WAITING_SYMBOL;
-                    treeAccessGuard[currentHeight][i]->unlock();
-                    return;
-                }
+bool Elf::hangDecoration(ChristmasTree &christmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &treeAccessGuard){
+    for (int i = 0; i < christmasTree.tree[currentHeight].size(); i++){
+        if (treeAccessGuard[currentHeight][i]->try_lock()){
+            if (christmasTree.tree[currentHeight][i] == ChristmasTree::UNDECORATED_SYMBOL){
+                christmasTree.scaffolding[currentHeight][currentWidth] = ELF_WORKING_SYMBOL;
+                std::this_thread::sleep_for(WORKING_TIME);
+                christmasTree.tree[currentHeight][i] = ChristmasTree::DECORATED_SYMBOL;
+                christmasTree.scaffolding[currentHeight][currentWidth] = ELF_WAITING_SYMBOL;
                 treeAccessGuard[currentHeight][i]->unlock();
+                return true;
             }
+            treeAccessGuard[currentHeight][i]->unlock();
         }
     }
+    return false;
 }

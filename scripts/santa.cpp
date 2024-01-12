@@ -1,5 +1,7 @@
 #include "santa.hpp"
-#include <iostream>
+
+// Assign value to santa's time beetwen delivers
+const std::chrono::milliseconds Santa::TIME_BEETWEN_DELIVERS = std::chrono::milliseconds(900);
 
 Santa::~Santa(){}
 
@@ -13,12 +15,10 @@ void Santa::deliverDecorations(std::atomic<int> &decorations){
     int producedDecorations = 0;
 
     while (true){
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        std::this_thread::sleep_for(TIME_BEETWEN_DELIVERS);
         producedDecorations = random(generator);
 
-        if (decorations + producedDecorations <= maxNumberOfDecorations){
+        if (decorations + producedDecorations <= maxNumberOfDecorations)
             decorations += producedDecorations;
-            std::cout << producedDecorations << std::endl;
-        }
     }
 }

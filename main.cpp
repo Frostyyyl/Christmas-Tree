@@ -8,12 +8,11 @@
 #include "elf.hpp"
 
 void handleInput(int &christmasTreeHeight, int &numberOfElves, int &maxNumberOfDecorations);
-void handleOutput(ChristmasTree &christmasTree);
 void clearScreen();
 
 int main(){
-    int christmasTreeHeight = 3;
-    int numberOfElves = 3;
+    int christmasTreeHeight = 5;
+    int numberOfElves = 5;
     int maxNumberOfDecorations = 5;
     ChristmasTree christmasTree(christmasTreeHeight);
     Santa santa(maxNumberOfDecorations);
@@ -35,9 +34,6 @@ int main(){
     }
 
     // Create threads
-    std::thread outputThread([&christmasTree]{
-        handleOutput(christmasTree);
-    });
     std::thread santaThread([&santa, &christmasTree, &decorations]{ 
         santa.deliverDecorations(decorations); 
     });
@@ -49,18 +45,20 @@ int main(){
         elfThreads.push_back(std::move(thread));
     }
 
-
-    std::this_thread::sleep_for(std::chrono::seconds(20));
-
-    // std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-    // for (auto &i : christmasTree.tree){
-    //     for (auto &j : i){
-    //         j = 'o';
-    //     }
-    // }
+    // Main program loop
+    while (!christmasTree.isDecorated()){
+        clearScreen();
+        christmasTree.display();
+        std::cout << "Current decorations: " << decorations << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
+    
+    // Show the result
+    clearScreen();
+    christmasTree.display();
+    
 
     // Join threads to complete the program
-    outputThread.detach();
     santaThread.detach();
     for (auto &elfThread : elfThreads){
         elfThread.detach();
@@ -68,6 +66,8 @@ int main(){
 
     return 0;
 }
+
+
 
 void handleInput(int &christmasTreeHeight, int &numberOfElves, int &maxNumberOfDecorations){
     do {
@@ -82,14 +82,6 @@ void handleInput(int &christmasTreeHeight, int &numberOfElves, int &maxNumberOfD
         std::cout << "Enter the maximum number of decorations: ";
         std::cin >> maxNumberOfDecorations;
     } while (maxNumberOfDecorations < 1);
-}
-
-void handleOutput(ChristmasTree &christmasTree){
-    while (true){        
-        // clearScreen();
-        christmasTree.display();
-        std::this_thread::sleep_for(std::chrono::milliseconds(1500));
-    }
 }
 
 void clearScreen(){

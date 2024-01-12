@@ -36,6 +36,7 @@ void ChristmasTree::display(){
 
         // Display scaffolding
         std::cout << ((i == 0) ? "  ┌" : "  ├");
+        // std::cout << ((i == 0) ? "┬" : "┼"); // Display a ladder
         for (int j = 0; j < ((height - (i + 1))); j++){
             std::cout << "─";
         }
@@ -59,5 +60,3 @@ bool ChristmasTree::isDecorated(){
     }
     return true;
 }
-
-

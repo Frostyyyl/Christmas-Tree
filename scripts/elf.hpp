@@ -12,7 +12,6 @@ private:
     static const std::chrono::milliseconds CLIMBING_TIME;
     static const std::chrono::milliseconds DESCENDING_TIME;
     static const std::chrono::milliseconds TAKING_DECORATION_TIME;
-    static const char ELF_SYMBOL = 'e'; // Currently not used
     static const char ELF_WORKING_SYMBOL = 'w';
     static const char ELF_WAITING_SYMBOL = 's';
     static const char ELF_CLIMBING_SYMBOL = 'c';
@@ -20,10 +19,10 @@ private:
     static std::mutex decorationsAccessGuard;
     int currentHeight = -1;
     int currentWidth = 0;
-    void goHigher(ChristmasTree &christmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &scaffoldingAccessGuard);
-    void goLower(ChristmasTree &christmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &scaffoldingAccessGuard);
     void getDecoration(std::atomic<int> &decorations);
-    void hangDecoration(ChristmasTree &ChristmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &treeAccessGuard); 
+    void goFloorHigher(ChristmasTree &christmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &scaffoldingAccessGuard);
+    void goFloorLower(ChristmasTree &christmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &scaffoldingAccessGuard);
+    bool hangDecoration(ChristmasTree &ChristmasTree, std::vector<std::vector<std::unique_ptr<std::mutex>>> &treeAccessGuard); 
 public:
     Elf();
     ~Elf();
