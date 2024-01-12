@@ -18,7 +18,9 @@ void Santa::deliverDecorations(std::atomic<int> &decorations){
         std::this_thread::sleep_for(TIME_BEETWEN_DELIVERS);
         producedDecorations = random(generator);
 
-        if (decorations + producedDecorations <= maxNumberOfDecorations)
+        if (decorations + producedDecorations <= maxNumberOfDecorations){
             decorations += producedDecorations;
+            broughtDecorations = producedDecorations;
+        }
     }
 }

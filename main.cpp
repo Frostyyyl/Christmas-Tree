@@ -8,6 +8,7 @@
 #include "elf.hpp"
 
 void handleInput(int &christmasTreeHeight, int &numberOfElves, int &maxNumberOfDecorations, std::string &screenClear);
+void handleSantaOutput(Santa &santa, std::mutex &displayAccessGuard);
 void clearScreen();
 
 int main(){
@@ -24,6 +25,7 @@ int main(){
     Santa santa(maxNumberOfDecorations);
     std::atomic<int> decorations = 0;
     std::vector<Elf> elves(numberOfElves);
+    std::mutex displayAccessGuard;
     std::vector<std::vector<std::unique_ptr<std::mutex>>> treeAccessGuard(christmasTreeHeight);
     std::vector<std::vector<std::unique_ptr<std::mutex>>> scaffoldingAccessGuard(christmasTreeHeight);
 
@@ -40,6 +42,9 @@ int main(){
     }
 
     // Create threads
+    std::thread santaOutputThread([&santa, &displayAccessGuard]{
+        handleSantaOutput(santa, displayAccessGuard);
+    });
     std::thread santaThread([&santa, &christmasTree, &decorations]{ 
         santa.deliverDecorations(decorations); 
     });
@@ -53,14 +58,18 @@ int main(){
 
     // Main program loop
     while (!christmasTree.isDecorated()){
+        displayAccessGuard.lock();
         if (screenClear == "yes" || screenClear == "Yes" || screenClear == "y")
             clearScreen();
         std::cout << screenDivider << std::endl;
         christmasTree.display();
+        displayAccessGuard.unlock();
+        // TODO: add a thread for displaying santa's brought decorations and add mutex to control display access
         std::this_thread::sleep_for(std::chrono::milliseconds(800));
     }
     
     // Show the result
+    displayAccessGuard.lock();
     if (screenClear == "yes" || screenClear == "Yes" || screenClear == "y")
         clearScreen();
     std::cout << screenDivider << std::endl;
@@ -69,6 +78,7 @@ int main(){
     
 
     // Join threads to complete the program
+    santaOutputThread.detach();
     santaThread.detach();
     for (auto &elfThread : elfThreads){
         elfThread.detach();
@@ -105,6 +115,18 @@ void handleInput(int &christmasTreeHeight, int &numberOfElves, int &maxNumberOfD
     } while (maxNumberOfDecorations < 1);
     std::cout << "Should the screen be cleared? (Yes/No): ";
     std::cin >> screenClear;
+}
+
+void handleSantaOutput(Santa &santa, std::mutex &displayAccessGuard){
+    while (true){
+        if (santa.broughtDecorations != 0){
+            displayAccessGuard.lock();
+            std::cout << "Santa has brought: " << santa.broughtDecorations << " decorations!\n";
+            santa.broughtDecorations = 0;
+            displayAccessGuard.unlock();
+        }
+    }
+    
 }
 
 void clearScreen(){

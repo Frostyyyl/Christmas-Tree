@@ -9,6 +9,7 @@ private:
     static const std::chrono::milliseconds TIME_BEETWEN_DELIVERS; 
     int maxNumberOfDecorations;
 public:
+    std::atomic<int> broughtDecorations = 0;
     Santa(int maxNumberOfDecorations);
     ~Santa();
     
