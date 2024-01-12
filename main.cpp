@@ -20,6 +20,7 @@ int main(){
     handleInput(christmasTreeHeight, numberOfElves, maxNumberOfDecorations, screenClear);
 
     ChristmasTree christmasTree(christmasTreeHeight);
+    std::string screenDivider((christmasTree.tree[0].size() * 2 + christmasTree.scaffolding[0].size() * 2 + 5), '-');
     Santa santa(maxNumberOfDecorations);
     std::atomic<int> decorations = 0;
     std::vector<Elf> elves(numberOfElves);
@@ -54,18 +55,17 @@ int main(){
     while (!christmasTree.isDecorated()){
         if (screenClear == "yes" || screenClear == "Yes" || screenClear == "y")
             clearScreen();
-        std::cout << "---------------------------------------------\n";
+        std::cout << screenDivider << std::endl;
         christmasTree.display();
-        std::cout << "Current decorations: " << decorations << std::endl;
         std::this_thread::sleep_for(std::chrono::milliseconds(800));
     }
     
     // Show the result
     if (screenClear == "yes" || screenClear == "Yes" || screenClear == "y")
         clearScreen();
-    std::cout << "---------------------------------------------\n";
+    std::cout << screenDivider << std::endl;
     christmasTree.display();
-    std::cout << "---------------------------------------------\n";
+    std::cout << screenDivider << std::endl;
     
 
     // Join threads to complete the program
