@@ -93,10 +93,13 @@ void handleInput(int &christmasTreeHeight, int &numberOfElves, int &maxNumberOfD
                 << "-         Christmas Tree Decorating         -\n"
                 << "---------------------------------------------\n"
                 << "Symbols:\n"
-                << "c - elf is climbing\n"
-                << "d - elf is descending\n"
-                << "w - elf is working\n"
-                << "s - elf is waiting\n"
+                << ChristmasTree::UNDECORATED_SYMBOL << " - branch is undecorated\n"
+                << ChristmasTree::DECORATED_SYMBOL << " - branch is decorated\n"
+                << ChristmasTree::EMPTY_SCAFFOLDING_SYMBOL << " - scaffolding is empty\n"
+                << Elf::ELF_CLIMBING_SYMBOL << " - elf is climbing\n"
+                << Elf::ELF_DESCENDING_SYMBOL << " - elf is descending\n"
+                << Elf::ELF_WORKING_SYMBOL << " - elf is working\n"
+                << Elf::ELF_WAITING_SYMBOL << " - elf is waiting\n"
                 << "---------------------------------------------\n";
     std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     do {
