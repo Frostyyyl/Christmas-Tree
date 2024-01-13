@@ -10,7 +10,7 @@ Santa::Santa(int maxNumberOfDecorations) : maxNumberOfDecorations{maxNumberOfDec
 void Santa::deliverDecorations(std::atomic<int> &decorations){
     std::random_device seed;
     std::mt19937 generator(seed());
-    // Modifiable range of how many decorations santa can deliver
+    // Modifiable range of how many decorations santa can deliver at once
     std::uniform_int_distribution<int> random(1, std::max(1, maxNumberOfDecorations / 2)); 
     int producedDecorations = 0;
 
@@ -21,6 +21,6 @@ void Santa::deliverDecorations(std::atomic<int> &decorations){
         if (decorations + producedDecorations <= maxNumberOfDecorations){
             decorations += producedDecorations;
             broughtDecorations = producedDecorations;
-        }
+        } else {}
     }
 }
